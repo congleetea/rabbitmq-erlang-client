@@ -29,7 +29,7 @@
 
 -include("amqp_client.hrl").
 
--behaviour(gen_server2).
+-behaviour(gen_server3).
 
 -export([start_link/3, call_consumer/2, call_consumer/3, call_consumer/4]).
 -export([behaviour_info/1]).
@@ -47,7 +47,7 @@
 %% Denotes a successful or an error return from a consumer module call.
 
 start_link(ConsumerModule, ExtraParams, Identity) ->
-    gen_server2:start_link(
+    gen_server3:start_link(
       ?MODULE, [ConsumerModule, ExtraParams, Identity], []).
 
 %% @spec (Consumer, Msg) -> ok
@@ -58,7 +58,7 @@ start_link(ConsumerModule, ExtraParams, Identity) ->
 %% @doc This function is used to perform arbitrary calls into the
 %% consumer module.
 call_consumer(Pid, Msg) ->
-    gen_server2:call(Pid, {consumer_call, Msg}, infinity).
+    gen_server3:call(Pid, {consumer_call, Msg}, infinity).
 
 %% @spec (Consumer, Method, Args) -> ok
 %% where
@@ -69,10 +69,10 @@ call_consumer(Pid, Msg) ->
 %% @doc This function is used by amqp_channel to forward received
 %% methods and deliveries to the consumer module.
 call_consumer(Pid, Method, Args) ->
-    gen_server2:call(Pid, {consumer_call, Method, Args}, infinity).
+    gen_server3:call(Pid, {consumer_call, Method, Args}, infinity).
 
 call_consumer(Pid, Method, Args, DeliveryCtx) ->
-    gen_server2:call(Pid, {consumer_call, Method, Args, DeliveryCtx}, infinity).
+    gen_server3:call(Pid, {consumer_call, Method, Args, DeliveryCtx}, infinity).
 
 %%---------------------------------------------------------------------------
 %% Behaviour
@@ -189,7 +189,7 @@ behaviour_info(callbacks) ->
      %% amqp_channel:call_consumer/2 will return. If the callback
      %% returns {noreply, _}, then the caller to
      %% amqp_channel:call_consumer/2 and the channel remain blocked
-     %% until gen_server2:reply/2 is used with the provided From as
+     %% until gen_server3:reply/2 is used with the provided From as
      %% the first argument.
      {handle_call, 3},
 
@@ -206,7 +206,7 @@ behaviour_info(_Other) ->
     undefined.
 
 %%---------------------------------------------------------------------------
-%% gen_server2 callbacks
+%% gen_server3 callbacks
 %%---------------------------------------------------------------------------
 
 init([ConsumerModule, ExtraParams, Identity]) ->
